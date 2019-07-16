@@ -14,6 +14,8 @@ from librosa import display
 sample_path = os.path.join('samples', os.listdir('samples')[0])
 
 y, sr = librosa.load(sample_path)
+print(np.shape(y))
+print(y)
 S = librosa.feature.melspectrogram(y=y, sr=sr)
 
 plt.figure(figsize=(10,4))
