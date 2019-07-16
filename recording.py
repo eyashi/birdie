@@ -11,7 +11,7 @@ from librosa import display
 
 import sounddevice as sd
 
-SAMPLE_RATE = 44100
+SAMPLE_RATE = 22050
 
 def record(duration, fs=22050, write_out=None):
     raw_rec = sd.rec(int(duration * fs), samplerate=fs, channels=1)
@@ -35,7 +35,7 @@ def record(duration, fs=22050, write_out=None):
     return recording
 
 def plot_spect(y):
-    S = librosa.feature.melspectrogram(y=y, sr=fs)
+    S = librosa.feature.melspectrogram(y=y, sr=SAMPLE_RATE)
 
     plt.figure(figsize=(10,4))
     display.specshow(
@@ -51,5 +51,5 @@ def plot_spect(y):
 
 if __name__ == "__main__":
     # cool, it works.
-    recording = record(10, fs=SAMPLE_RATE, write_out=None)
+    recording = record(10, fs=SAMPLE_RATE, write_out='wav')
     plot_spect(recording)
