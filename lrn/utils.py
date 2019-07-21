@@ -41,15 +41,24 @@ def generate_subset_of_data(
         except:
             pass
 
-    while len(collected_samples) < num_samples:
-        idx = random.randint(0, len(sample_pool) - 1)
-        collected_samples.append(sample_pool[idx])
+    if num_samples == "all":
+        with open(
+            os.path.join(output_path, "{}-selected-samples.txt".format(num_samples)),
+            "w",
+        ) as f:
+            for i in sample_pool:
+                f.write(i + "\n")
+    else:
+        while len(collected_samples) < num_samples:
+            idx = random.randint(0, len(sample_pool) - 1)
+            collected_samples.append(sample_pool[idx])
 
-    with open(
-        os.path.join(output_path, "{}-selected-samples.txt".format(num_samples)), "w"
-    ) as f:
-        for i in collected_samples:
-            f.write(i + "\n")
+        with open(
+            os.path.join(output_path, "{}-selected-samples.txt".format(num_samples)),
+            "w",
+        ) as f:
+            for i in collected_samples:
+                f.write(i + "\n")
 
 
 if __name__ == "__main__":

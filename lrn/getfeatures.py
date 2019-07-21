@@ -1,4 +1,6 @@
 import os
+import shutil
+import concurrent
 import librosa
 from librosa import display
 import matplotlib.pyplot as plt
@@ -75,12 +77,15 @@ def extract_features(audio_file_path):
         y=audio_raw, sr=SAMPLE_RATE, n_fft=2048, hop_length=1024, window="hann"
     )
 
-    return msg
+    mel_path = os.path.join(
+        "mel", os.path.splitext(os.path.basename(audio_file_path))[0]
+    )
+    np.save(mel_path, msg)
 
 
 def output_mel(trial_size, overwrite=False):
     if overwrite:
-        os.rmdir("mel")
+        shutil.rmtree("mel")
         os.mkdir("mel")
     else:
         return
@@ -90,13 +95,28 @@ def output_mel(trial_size, overwrite=False):
     ) as f:
         sample_paths = list(filter(None, f.read().split("\n")))
 
-    for sample in tqdm(sample_paths):
-        mel_path = os.path.join("mel", os.path.splitext(os.path.basename(sample))[0])
-        if os.path.exists(mel_path) and not overwrite:
-            return
-        else:
-            msg = extract_features(sample)
-            np.save(mel_path, msg)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        future_to_msg = {
+            executor.submit(extract_features, sample): sample for sample in sample_paths
+        }
+        for future in tqdm(
+            concurrent.futures.as_completed(future_to_msg), total=len(sample_paths)
+        ):
+            msg = future_to_msg[future]
+            try:
+                data = future.result()
+            except Exception as exc:
+                print("%r generated an exception: %s" % (msg, exc))
+            else:
+                pass
+
+    # for sample in tqdm(sample_paths):
+    #     mel_path = os.path.join("mel", os.path.splitext(os.path.basename(sample))[0])
+    #     if os.path.exists(mel_path) and not overwrite:
+    #         return
+    #     else:
+    #         msg = extract_features(sample)
+    #         np.save(mel_path, msg)
 
 
 def label_mel(mel_dir, label_dir):
@@ -106,12 +126,9 @@ def label_mel(mel_dir, label_dir):
     for f in tqdm(os.listdir(mel_dir)):
         fp = os.path.join(mel_dir, f)
         arr = np.load(fp)
-        for smp in arr:
-            if smp.shape != (216,):
-                continue
-            X.append(smp)
-            key = os.path.splitext(f)[0]
-            y.append(labels[key])
+        X.append(np.resize(arr, (128, 216)))
+        key = os.path.splitext(f)[0]
+        y.append(labels[key])
 
     X, y = np.array(X), np.array(y)
     # normalize the values of X
@@ -129,18 +146,15 @@ def run(trial_size=100, generate_new_subset=False, overwrite_mel=False):
 		Set trialSize to 'all' to run on entire dataset.
 		Set generateNewSubset to 'True' if you've ran the same trial size before and want new samples.
 	"""
-    if trial_size is "all":
-        pass
-    else:
-        utils.generate_subset_of_data(
-            DATA_DRIVE, num_samples=trial_size, generate_new_subset=generate_new_subset
-        )
-        output_mel(trial_size, overwrite=overwrite_mel)
-        X, y = label_mel("mel", "retired\eval")
+    utils.generate_subset_of_data(
+        DATA_DRIVE, num_samples=trial_size, generate_new_subset=generate_new_subset
+    )
+    output_mel(trial_size, overwrite=overwrite_mel)
+    X, y = label_mel("mel", "retired\eval")
 
-        return X, y
+    return X, y
 
 
 if __name__ == "__main__":
-    # run(1000, generate_new_subset=False, overwrite_mel=True)
-    pass
+    X, y = run("all", generate_new_subset=False, overwrite_mel=True)
+
