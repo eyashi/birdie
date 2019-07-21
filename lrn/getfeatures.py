@@ -26,6 +26,28 @@ def load_audio(audio_file_path):
     return None, None
 
 
+def load_desc_dict(desc_file):
+    # parses a csv file with id of sample and the label
+    with open(desc_file, "r") as d_labels:
+        lines = d_labels.read().split("\n")
+        items = [i.split(",") for i in lines]
+        desc_dict = {i[0]: i[1] for i in items if len(i) == 2}
+
+    return desc_dict
+
+
+def build_all_label_dict(label_dir):
+    all_label_dict = {}
+    for root, dirs, files in os.walk(label_dir):
+        for f in files:
+            name, ext = os.path.splitext(f)
+            if ext == ".csv":
+                d = load_desc_dict(os.path.join(root, f))
+                all_label_dict.update(d)
+
+    return all_label_dict
+
+
 def show_numpy_graph(data):
     plt.imshow(msg, interpolation="nearest")
     plt.show()
@@ -60,6 +82,8 @@ def output_mel(trial_size, overwrite=False):
     if overwrite:
         os.rmdir("mel")
         os.mkdir("mel")
+    else:
+        return
 
     with open(
         os.path.join("samples", "{}-selected-samples.txt".format(trial_size)), "r"
@@ -73,6 +97,29 @@ def output_mel(trial_size, overwrite=False):
         else:
             msg = extract_features(sample)
             np.save(mel_path, msg)
+
+
+def label_mel(mel_dir, label_dir):
+    X, y = [], []
+
+    labels = build_all_label_dict(label_dir)
+    for f in tqdm(os.listdir(mel_dir)):
+        fp = os.path.join(mel_dir, f)
+        arr = np.load(fp)
+        for smp in arr:
+            if smp.shape != (216,):
+                continue
+            X.append(smp)
+            key = os.path.splitext(f)[0]
+            y.append(labels[key])
+
+    X, y = np.array(X), np.array(y)
+    # normalize the values of X
+    _min = X.min()
+    _max = X.max()
+    X = (X - _min) / (_max - _min)
+
+    return X, y
 
 
 def run(trial_size=100, generate_new_subset=False, overwrite_mel=False):
@@ -89,7 +136,11 @@ def run(trial_size=100, generate_new_subset=False, overwrite_mel=False):
             DATA_DRIVE, num_samples=trial_size, generate_new_subset=generate_new_subset
         )
         output_mel(trial_size, overwrite=overwrite_mel)
+        X, y = label_mel("mel", "retired\eval")
+
+        return X, y
 
 
 if __name__ == "__main__":
-    run(1000, generate_new_subset=False, overwrite_mel=True)
+    # run(1000, generate_new_subset=False, overwrite_mel=True)
+    pass
