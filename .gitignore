@@ -5,3 +5,5 @@ eval/
 feat/
 samples/
 ukybirddet/
+mel/
+*.pyc
