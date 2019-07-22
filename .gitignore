@@ -7,3 +7,5 @@ samples/
 ukybirddet/
 mel/
 *.pyc
+__pycache__/
+recordings/
