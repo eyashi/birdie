@@ -11,17 +11,17 @@
 ## Check if there are any bird sounds in the audio
 
 - Try to shorten the sample length trained on. 40ms instead of 80.
-- Further filter out some of the channels.. create fewer filter buckets to reduce number of features.
+- Further filter out some of the channels.. create fewer hanning filter windows to reduce number of features.
 - Add a lot more convolutional layers as in birddet.py
 - What is LeakyReLU?
-- What is batch normalization
+- What is batch normalization?
 - More max pooling?
-- Why can't I end my dense layer in a 1?
-- Activate with sigmoid?
-- Use binary cross-entropy instead of catagorical OH DUH
+- Why couldn't I end my dense layer in a 1?
+- Activate final dense layer with sigmoid?
+- Use binary cross-entropy instead of catagorical DUH
 - Change the learning rate of Adam?
-- Try to use the callback function to end when improvement stops.
-  - Do many epochs.
+- Use the callback function to end when improvement stops.
+  - Do many epochs. Run overnight.
 - Actually export the model in the end !!!
 
 Current model with notes above for improvement:
