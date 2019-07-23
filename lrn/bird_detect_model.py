@@ -43,4 +43,5 @@ if __name__ == "__main__":
     input_shape = (X_train.shape[1], X_train.shape[2], X_train.shape[3])
     m = get_conv_model(input_shape)
 
-    m.fit(x=X_train, y=y_train, epochs=10, batch_size=32, shuffle=True)
+    m.fit(x=X_train, y=y_train, epochs=30, batch_size=32, shuffle=True)
+    m.save("final.h5")

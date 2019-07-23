@@ -99,6 +99,7 @@ def output_mel(trial_size, overwrite=False):
         future_to_msg = {
             executor.submit(extract_features, sample): sample for sample in sample_paths
         }
+        print("Extracting features!")
         for future in tqdm(
             concurrent.futures.as_completed(future_to_msg), total=len(sample_paths)
         ):
@@ -123,6 +124,7 @@ def label_mel(mel_dir, label_dir):
     X, y = [], []
 
     labels = build_all_label_dict(label_dir)
+    print("Labeling mel data")
     for f in tqdm(os.listdir(mel_dir)):
         fp = os.path.join(mel_dir, f)
         arr = np.load(fp)
@@ -150,7 +152,7 @@ def run(trial_size=100, generate_new_subset=False, overwrite_mel=False):
         DATA_DRIVE, num_samples=trial_size, generate_new_subset=generate_new_subset
     )
     output_mel(trial_size, overwrite=overwrite_mel)
-    X, y = label_mel("mel", "retired\eval")
+    X, y = label_mel("mel", "eval")
 
     return X, y
 

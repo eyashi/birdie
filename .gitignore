@@ -9,3 +9,4 @@ mel/
 *.pyc
 __pycache__/
 recordings/
+models/
