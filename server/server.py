@@ -7,6 +7,12 @@ log_file_name = "bird_present_log.txt"
 if not os.path.isfile(log_file_name):
     open(log_file_name, "a").close()
 
+unprocessed_clip_dir = os.path.join("recordings", "unprocessed")
+
+# initialize prediction engine
+# TODO: Some class here that loads up the predictor function and waits for input
+predictor = Predictor()
+
 # init the flask app
 app = Flask(__name__)
 
@@ -19,7 +25,13 @@ def report_status():
 
 @app.route("/evaluate")
 def evaluate_new_clip():
-    pass
+    dir_contents = os.listdir(unprocessed_clip_dir)
+    if len(dir_contents) > 0:
+        for new_clip in dir_contents:
+            predictor.predict(new_clip)
+
+    else:
+        resp = jsonify(status='No Clips', success=True)
 
 
 @app.route("/increment-count")
