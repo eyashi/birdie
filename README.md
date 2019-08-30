@@ -24,3 +24,11 @@ To come:
    - Will require another model trained on another dataset, this time with tags on what kind of bird it is. Will try to get some data set local to California if possible.
 2. Constructing the basis for sentiment analysis on these bird calls. This could be a laughable effort but I like to laugh.
 3. Twitter integration (the easy part).
+
+# Data Logging Server
+
+There's probably a simpler architecture for this, but I'm just going to build what I know:
+
+## A Flask server to run a dashboard and execute processing
+
+This server will run on the host computer, listen for any requests to process an audio clip recorded, create a prediction for whether there are any bird sounds in the clip, and update the dashboard for bird counts.

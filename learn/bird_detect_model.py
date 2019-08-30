@@ -4,7 +4,7 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.utils import to_categorical
 
 import numpy as np
-import getfeatures
+import get_features
 
 
 def get_conv_model(input_shape):
@@ -32,16 +32,16 @@ def get_conv_model(input_shape):
 
     return model
 
-
-if __name__ == "__main__":
-    X, y = getfeatures.run("all", generate_new_subset=False, overwrite_mel=False)
-
+def train_model():
+    X, y = get_features.run("all", generate_new_subset=False, overwrite_mel=False)
     # make into a 2 dim input
-    X_train = np.reshape(X, (X.shape[0], X.shape[1], X.shape[2], 1))
     y_train = to_categorical(y)
 
-    input_shape = (X_train.shape[1], X_train.shape[2], X_train.shape[3])
+    input_shape = (X.shape[1], X.shape[2], X.shape[3])
     m = get_conv_model(input_shape)
 
-    m.fit(x=X_train, y=y_train, epochs=30, batch_size=32, shuffle=True)
+    m.fit(x=X, y=y_train, epochs=30, batch_size=32, shuffle=True)
     m.save("final.h5")
+
+if __name__ == "__main__":
+    train_model()

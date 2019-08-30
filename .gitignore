@@ -1,12 +1,11 @@
 .vscode/
-sed-crnn/
 output/
 eval/
 feat/
 samples/
-ukybirddet/
 mel/
 *.pyc
 __pycache__/
 recordings/
 models/
+inspo/

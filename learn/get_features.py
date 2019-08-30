@@ -6,7 +6,6 @@ from librosa import display
 import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
-
 import utils
 
 DATA_DRIVE = "E:\\"  # usb that the data is on
@@ -51,7 +50,7 @@ def build_all_label_dict(label_dir):
 
 
 def show_numpy_graph(data):
-    plt.imshow(msg, interpolation="nearest")
+    plt.imshow(data, interpolation="nearest")
     plt.show()
 
 
@@ -68,7 +67,13 @@ def export_spectrogram_image(msg, sample_file_path):
     plt.close()
 
 
-def extract_features(audio_file_path):
+def normalize_features(features):
+    _min = features.min()
+    _max = features.max()
+    return (features - _min) / (_max - _min)
+
+
+def extract_features(audio_file_path, save=True):
     # load in the sample
     audio_raw, sample_rate = load_audio(audio_file_path)
 
@@ -76,11 +81,16 @@ def extract_features(audio_file_path):
     msg = librosa.feature.melspectrogram(
         y=audio_raw, sr=SAMPLE_RATE, n_fft=2048, hop_length=1024, window="hann"
     )
+    msg = normalize_features(np.resize(msg, (128, 216)))
+    msg = np.reshape(msg, (msg.shape[0], msg.shape[1], msg.shape[2], 1))
 
     mel_path = os.path.join(
         "mel", os.path.splitext(os.path.basename(audio_file_path))[0]
     )
-    np.save(mel_path, msg)
+    if save:
+        np.save(mel_path, msg)
+
+    return msg
 
 
 def output_mel(trial_size, overwrite=False):
@@ -111,16 +121,8 @@ def output_mel(trial_size, overwrite=False):
             else:
                 pass
 
-    # for sample in tqdm(sample_paths):
-    #     mel_path = os.path.join("mel", os.path.splitext(os.path.basename(sample))[0])
-    #     if os.path.exists(mel_path) and not overwrite:
-    #         return
-    #     else:
-    #         msg = extract_features(sample)
-    #         np.save(mel_path, msg)
 
-
-def label_mel(mel_dir, label_dir):
+def label_and_collect_mel(mel_dir, label_dir):
     X, y = [], []
 
     labels = build_all_label_dict(label_dir)
@@ -152,7 +154,7 @@ def run(trial_size=100, generate_new_subset=False, overwrite_mel=False):
         DATA_DRIVE, num_samples=trial_size, generate_new_subset=generate_new_subset
     )
     output_mel(trial_size, overwrite=overwrite_mel)
-    X, y = label_mel("mel", "eval")
+    X, y = label_and_collect_mel("mel", "eval")
 
     return X, y
 

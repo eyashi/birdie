@@ -1,4 +1,4 @@
-# for any repeatedly used utility files
+# for any repeatedly used utility functions
 
 import os
 import csv
@@ -59,8 +59,4 @@ def generate_subset_of_data(
         ) as f:
             for i in collected_samples:
                 f.write(i + "\n")
-
-
-if __name__ == "__main__":
-    generate_subset_of_data("E:\\", 50)
 

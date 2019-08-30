@@ -10,7 +10,7 @@ if not os.path.isfile(log_file_name):
 unprocessed_clip_dir = os.path.join("recordings", "unprocessed")
 
 # initialize prediction engine
-# TODO: Some class here that loads up the predictor function and waits for input
+
 predictor = Predictor()
 
 # init the flask app
@@ -28,7 +28,11 @@ def evaluate_new_clip():
     dir_contents = os.listdir(unprocessed_clip_dir)
     if len(dir_contents) > 0:
         for new_clip in dir_contents:
-            predictor.predict(new_clip)
+            clip_name, pred = predictor.predict(new_clip)
+
+            if pred == 1:
+                # or redirect?
+                increment_bird_counter()
 
     else:
         resp = jsonify(status='No Clips', success=True)
