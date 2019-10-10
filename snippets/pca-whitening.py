@@ -9,28 +9,57 @@ whitened = pca.fit_transform(X)
 
 # via : https://stackoverflow.com/questions/6574782/how-to-whiten-matrix-in-pca
 
-def whiten(X,fudge=1E-18):
+# Segment these into windows, then PCA whiten.
+# At first let's just whiten the whole thing?
+def pca_whiten(section, eps=1):
+	'''
+	Whitening for windowed sections of the spectrogram.
+	eps value chosen arbitrarily to keep numbers from getting
+	too high. See snippets/pca-whitening.py for details
 
-   # the matrix X should be observations-by-components
-   # TODO: Understand what is meant by this input structure...
+	I've had to increase the fudge value all the way to 1
+	There were negative values in the covariance matrix. Look up best ways to handle this.
+	Some random dudes here told me to add a positive number to offset:
+	https://www.researchgate.net/post/How_to_deal_with_negative_eigenvalue_during_whitening_matrix_computation_in_CSP
 
-   # get the covariance matrix
-   Xcov = np.dot(X.T,X)
+	What happens if I set all negative numbers to zero?
+	Not really much in light of me adding an enormous value of 1 back to the matrix. Makes it easy to
+	visualize but it might not be important for me really, if the program can tell the difference.
+	Small values do seem to totally mess up real isolation though... not great.
+	'''
 
-   # eigenvalue decomposition of the covariance matrix
-   d, V = np.linalg.eigh(Xcov)
+	# make the mean of the dataset 0.
+	X = section - section.mean(axis=0)
 
-   # a fudge factor can be used so that eigenvectors associated with
-   # small eigenvalues do not get overamplified.
-   D = np.diag(1. / np.sqrt(d+fudge))
+	# covariance matrix
+	# In this case, time by frequency is being compared.
+	# produces shape (431, 431)
+	# goal of covariance matrix was to make a symmetric matrix
+	# for the decomposition into eigenvalues TODO:LEARN MORE!
+	# Dot product = covariance when mean = 0.
+	Xcov = np.dot(X.T, X)
 
-   # whitening matrix
-   W = np.dot(np.dot(V, D), V.T)
+	# eigenvalue decomposition of the matrix
+	# d is an array of values, V is a np.array shape (431, 431)
+	d, V = np.linalg.eigh(Xcov)
 
-   # multiply by the whitening matrix
-   X_white = np.dot(X, W)
+	# calculate diagonals? this is the whitening step
+	# divide by square root. re-read this section
+	# image is now a beautiful line that fades...
+	# can't show the spectrogram of this array
+	D = np.diag(1.0 / np.sqrt(d.clip(0) + eps))
 
-   return X_white, W
+	# whitening matrix
+	# quite literally has plotted a completely blank thing.
+	W = np.dot(np.dot(V, D), V.T)
+
+	# multiply by the whitening matrix
+	X_white = np.dot(X, W)
+
+	# plt.imshow(X_white)
+	# plt.show()
+
+	return X_white
 
 # or using svd
 def svd_whiten(X):

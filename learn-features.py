@@ -9,68 +9,68 @@ import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
 
+from sklearn.decomposition import PCA
+
 import utils
 
-test_path = os.path.join('recordings', '19037.wav')
+test_path = os.path.join('recordings', '107607.wav')
 
 # Open audio file, currently shape (220500,)
 audio, sr = utils.load_audio(test_path)
 
 # Convert to mel-spectrogram (time-frequency representation)
 # Varying these window sizes may be helpful in domain training for different noise environments.
+# Specify number of filter bins N=40 as in Stowell Plumbley
 msg = librosa.feature.melspectrogram(
-	y=audio, sr=sr, n_fft=1024, hop_length=512, window='hann'
+	y=audio, sr=sr, n_fft=1024, hop_length=512, n_mels=40
 )
 
-# Segment these into windows, then PCA whiten.
-# At first let's just whiten the whole thing?
-def pca_whiten(section, eps=1e-15):
-	'''
-	Whitening for windowed sections of the spectrogram.
-	eps value chosen arbitrarily to keep numbers from getting
-	too high. See snippets/pca-whitening.py for details
+# Normalize the spectrogram
+_min = msg.min()
+_max = msg.max()
+msg_norm = (msg - _min) / (_max - _min)
 
-	I've had to increase the fudge value all the way to 1
-	There were negative values in the covariance matrix. Look up best ways to handle this.
-	Some random dudes here told me to add a positive number to offset:
-	https://www.researchgate.net/post/How_to_deal_with_negative_eigenvalue_during_whitening_matrix_computation_in_CSP
+# PCA Whiten...
+pca = PCA(n_components=msg_norm.shape[0], whiten=True)
+msg_white = pca.fit_transform(msg_norm)
+plt.imshow(msg_white)
+plt.show()
+print(msg_white.shape)
 
-	What happens if I set all negative numbers to zero?
-	Not really much in light of me adding an enormous value of 1 back to the matrix. Makes it easy to
-	visualize but it might not be important for me really, if the program can tell the difference.
-	Small values do seem to totally mess up real isolation though... not great.
-	'''
-	X = section
+# Via Dieleman and Schrauwen:
 
-	# covariance matrix
-	# In this case, time by frequency is being compared.
-	# produces shape (431, 431)
-	# goal of covariance matrix was to make a symmetric matrix
-	# for the decomposition into eigenvalues TODO:LEARN MORE!
-	Xcov = np.dot(X.T, X)
+# Divide into large pooling windows
+# num_windows = 5 # cooresponding to 2 seconds of 10 second audio clip
+# pooling_window_len = [int(msg.shape[0]/num_windows)]*num_windows
+# pooling_window_len[-1] += msg.shape[0] % num_windows # add remainder to the last pooling window
 
-	# eigenvalue decomposition of the matrix
-	# d is an array of values, V is a np.array shape (431, 431)
-	d, V = np.linalg.eigh(Xcov)
+# pooling_windows = []
+# idx = 0
 
-	# calculate diagonals? this is the whitening step
-	# divide by square root. re-read this section
-	# image is now a beautiful line that fades...
-	# can't show the spectrogram of this array
-	D = np.diag(1.0 / np.sqrt(d.clip(0) + eps))
+# for w in pooling_window_len:
+# 	pooling_windows.append(msg[:, idx:idx+w])
+# 	idx += w
 
-	# whitening matrix
-	# quite literally has plotted a completely blank thing.
-	# is this broken.
-	W = np.dot(np.dot(V, D), V.T)
+# Divide into smaller consecutive frames and PCA whiten
 
-	# multiply by the whitening matrix
-	X_white = np.dot(X, W)
+# pca_windows = []
 
-	print(X_white)
-	# plt.imshow(X_white, interpolation='nearest')
-	# plt.show()
-	show_spectrogram(X_white)
+# for pw in pooling_windows:
+# 	f_pca = PCA(n_components=1, whiten=True)
+# 	pca_windows.append(f_pca.fit_transform(pw))
+
+# img = np.concatenate(pca_windows, axis=1)
+
+# print(img.shape)
+# plt.imshow(pca_windows)
+# plt.show()
+
+# Then apply K-Means within pooling windows
+
+# Pool by taking maximum across time TODO: Figure out what that means exactly.
+
+# seg_size = 4
+# seg = msg[:,0:seg_size]
 
 def show_spectrogram(msg):
 	plt.figure(figsize=(10,4))
@@ -92,5 +92,15 @@ def show_waveform(audio, sr):
 	display.waveplot(audio, sr=sr)
 	plt.show()
 
-if __name__ == '__main__':
-	pca_whiten(msg)
+# if __name__ == '__main__':
+	# f = pca_whiten(msg)
+	# pca_prewhite = PCA(n_components=64)
+	# pca_prewhite.fit(f)
+	# print(pca_prewhite.explained_variance_ratio_)
+	# pca = PCA(n_components=8, whiten=False)
+	# X_new = pca.fit_transform(msg)
+	# print(np.sum(pca.explained_variance_ratio_))
+	# print(X_new.shape)
+	# show_spectrogram(X_new)
+	# plt.imshow(X_new)
+	# plt.show()
