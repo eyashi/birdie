@@ -8,6 +8,10 @@ import numpy as np
 from tqdm import tqdm
 import utils
 
+'''
+Retiring this for now as a good first shot.
+'''
+
 DATA_DRIVE = "E:\\"  # usb that the data is on
 SAMPLE_RATE = 22050
 

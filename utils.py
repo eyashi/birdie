@@ -32,16 +32,26 @@ def load_audio(audio_file_path):
     return None, None
 
 def check_data_drive(drive_name):
-    # validates that the drive is present, returns the drive name if it is. Not that cool.
+    # validates that the drive is present, returns the drive name if it is.
     if drive_name in [i.device for i in psutil.disk_partitions()]:
         return drive_name
     else:
         return False
 
-
 def generate_subset_of_data(
-    data_drive_path, num_samples=10, output_path="samples", generate_new_subset=False
+    num_samples=10,
+    output_path="samples",
+    generate_new_subset=False,
+    sample_dir
 ):
+    '''
+    Generates a text file with a file path to a sample on each line.
+    Expects the sample directory provided to have individual datasets
+    in folders within it, with the audio clips inside one more directory
+    labeled with their file type. eg: D:/Birds/ff1010/wav/*.wav.
+    
+    The sample_dir parameter would then be D:/Birds/ for the above.
+    '''
 
     if os.path.isfile(
         os.path.join(output_path, "{}-selected-samples.txt".format(num_samples))
@@ -53,8 +63,8 @@ def generate_subset_of_data(
     collected_samples = []
 
     # make the sample pool of all available audio files
-    for fold in os.listdir(data_drive_path):
-        d1 = os.path.join(data_drive_path, fold)
+    for fold in os.listdir(sample_dir):
+        d1 = os.path.join(sample_dir, fold)
         try:
             if os.path.isdir(d1):
                 for f in os.listdir(d1):

@@ -1,5 +1,5 @@
 # The database for the bird prediction engine. Start with a simple CSV situation?
-# Upgrade to SQL if it seems necessary / quicker.
+# Upgrade to SQL later.
 
 import os
 import csv
