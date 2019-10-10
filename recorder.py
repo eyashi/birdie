@@ -15,7 +15,6 @@ audio device of your computer. Set some constants in constants.py and
 run to start collecting audio data. Yay.
 """
 
-
 class Recorder:
     def __init__(self, sr=constants.REC_SAMPLE_RATE):
         self.sr = sr

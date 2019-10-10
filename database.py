@@ -1,5 +1,5 @@
 # The database for the bird prediction engine. Start with a simple CSV situation?
-# Upgrade to SQL if it seems necessary / quicker.
+# Upgrade to SQL later.
 
 import os
 import csv
@@ -19,8 +19,11 @@ class Database():
 
 	def update(self, data):
 		# Adds new prediction to the CSV
+
+		# TODO: Validate the structure of the data coming in.
 		with open(DATABASE_FILE, 'a') as db:
-			db.write(data)
+			writer = csv.writer(db)
+			writer.writerow(data)
 
 	def return_counts(self):
 		# TODO: Return the counts of clips with and without bird sounds
