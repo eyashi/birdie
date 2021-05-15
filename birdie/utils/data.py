@@ -1,5 +1,3 @@
-# for any repeatedly used utility functions
-
 import os
 import csv
 
@@ -10,27 +8,6 @@ import random
 import librosa
 import numpy as np
 
-def load_audio(audio_file_path):
-    '''
-    Opens an audio file using librosa.load or numpy.load if already in the
-    format of a numpy array.
-
-    Takes in the path to the audio file.
-    Returns the sound array and the sample rate.
-    '''
-    file_base, file_extension = os.path.splitext(audio_file_path)
-
-    if file_extension == ".wav" or file_extension == ".mp3":
-        return librosa.load(audio_file_path)
-
-    elif file_extension == ".npy":
-        sound_arr = np.load(audio_file_path)
-        sample_rate = SAMPLE_RATE
-
-        return sound_arr, sample_rate
-
-    return None, None
-
 def check_data_drive(drive_name):
     # validates that the drive is present, returns the drive name if it is.
     if drive_name in [i.device for i in psutil.disk_partitions()]:
@@ -39,10 +16,10 @@ def check_data_drive(drive_name):
         return False
 
 def generate_subset_of_data(
+    sample_dir,
     num_samples=10,
     output_path="samples",
     generate_new_subset=False,
-    sample_dir
 ):
     '''
     Generates a text file with a file path to a sample on each line.
@@ -92,4 +69,3 @@ def generate_subset_of_data(
         ) as f:
             for i in collected_samples:
                 f.write(i + "\n")
-
