@@ -8,21 +8,22 @@ import numpy as np
 from tqdm import tqdm
 import utils
 
-'''
+"""
 Retiring this for now as a good first shot.
-'''
+"""
 
 DATA_DRIVE = "E:\\"  # usb that the data is on
 SAMPLE_RATE = 22050
 
+
 def load_audio(audio_file_path):
-    '''
+    """
     Opens an audio file using librosa.load or numpy.load if already in the
     format of a numpy array.
 
     Takes in the path to the audio file.
     Returns the sound array and the sample rate.
-    '''
+    """
     file_base, file_extension = os.path.splitext(audio_file_path)
 
     if file_extension == ".wav" or file_extension == ".mp3":
@@ -155,11 +156,11 @@ def label_and_collect_mel(mel_dir, label_dir):
 
 def run(trial_size=100, generate_new_subset=False, overwrite_mel=False):
     """
-		Main task runner for this script.
-		Select a trial size to randomly assemble a list of files to perform analysis on.
-		Set trialSize to 'all' to run on entire dataset.
-		Set generateNewSubset to 'True' if you've ran the same trial size before and want new samples.
-	"""
+    Main task runner for this script.
+    Select a trial size to randomly assemble a list of files to perform analysis on.
+    Set trialSize to 'all' to run on entire dataset.
+    Set generateNewSubset to 'True' if you've ran the same trial size before and want new samples.
+    """
     utils.generate_subset_of_data(
         DATA_DRIVE, num_samples=trial_size, generate_new_subset=generate_new_subset
     )
@@ -171,4 +172,3 @@ def run(trial_size=100, generate_new_subset=False, overwrite_mel=False):
 
 if __name__ == "__main__":
     X, y = run("all", generate_new_subset=False, overwrite_mel=True)
-

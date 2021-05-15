@@ -32,6 +32,7 @@ def get_conv_model(input_shape):
 
     return model
 
+
 def train_model():
     X, y = get_features.run("all", generate_new_subset=False, overwrite_mel=False)
     # make into a 2 dim input
@@ -42,6 +43,7 @@ def train_model():
 
     m.fit(x=X, y=y_train, epochs=30, batch_size=32, shuffle=True)
     m.save("final.h5")
+
 
 if __name__ == "__main__":
     train_model()

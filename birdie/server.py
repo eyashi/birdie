@@ -25,7 +25,10 @@ app = Flask(__name__)
 @app.route("/")
 def report_status():
     birds, no_birds = db.return_counts()
-    return "Clips with birds present: {0}\nClips with no birds present: {1}".format(birds, no_birds)
+    return "Clips with birds present: {0}\nClips with no birds present: {1}".format(
+        birds, no_birds
+    )
+
 
 @app.route("/evaluate")
 def evaluate_new_clip():
@@ -38,13 +41,14 @@ def evaluate_new_clip():
                 # update the database, leaving the two other predictions aside for later.
                 db.update([clip_name, pred, None, None])
 
-            return jsonify(status='clips processed', success=True)
+            return jsonify(status="clips processed", success=True)
         except Exception as e:
-            return jsonify(status='error', success=False)
+            return jsonify(status="error", success=False)
 
     else:
-        resp = jsonify(status='no clips', success=True)
+        resp = jsonify(status="no clips", success=True)
         return resp
+
 
 if __name__ == "__main__":
     app.run()

@@ -13,7 +13,7 @@ from sklearn.decomposition import PCA
 
 import utils
 
-test_path = os.path.join('recordings', '107607.wav')
+test_path = os.path.join("recordings", "107607.wav")
 
 # Open audio file, currently shape (220500,)
 audio, sr = utils.load_audio(test_path)
@@ -22,7 +22,7 @@ audio, sr = utils.load_audio(test_path)
 # Varying these window sizes may be helpful in domain training for different noise environments.
 # Specify number of filter bins N=40 as in Stowell Plumbley
 msg = librosa.feature.melspectrogram(
-	y=audio, sr=sr, n_fft=1024, hop_length=512, n_mels=40
+    y=audio, sr=sr, n_fft=1024, hop_length=512, n_mels=40
 )
 
 # Normalize the spectrogram
@@ -72,35 +72,34 @@ print(msg_white.shape)
 # seg_size = 4
 # seg = msg[:,0:seg_size]
 
+
 def show_spectrogram(msg):
-	plt.figure(figsize=(10,4))
-	librosa.display.specshow(librosa.power_to_db(
-		msg,
-		ref=np.max
-	),
-	y_axis='mel', fmax=8000,
-	x_axis='time'
-	)
-	plt.colorbar(format='%+2.0f dB')
-	plt.title('Mel spectrogram')
-	plt.tight_layout()
-	plt.show()
+    plt.figure(figsize=(10, 4))
+    librosa.display.specshow(
+        librosa.power_to_db(msg, ref=np.max), y_axis="mel", fmax=8000, x_axis="time"
+    )
+    plt.colorbar(format="%+2.0f dB")
+    plt.title("Mel spectrogram")
+    plt.tight_layout()
+    plt.show()
+
 
 def show_waveform(audio, sr):
-	plt.figure()
-	plt.subplot(3, 1, 1)
-	display.waveplot(audio, sr=sr)
-	plt.show()
+    plt.figure()
+    plt.subplot(3, 1, 1)
+    display.waveplot(audio, sr=sr)
+    plt.show()
+
 
 # if __name__ == '__main__':
-	# f = pca_whiten(msg)
-	# pca_prewhite = PCA(n_components=64)
-	# pca_prewhite.fit(f)
-	# print(pca_prewhite.explained_variance_ratio_)
-	# pca = PCA(n_components=8, whiten=False)
-	# X_new = pca.fit_transform(msg)
-	# print(np.sum(pca.explained_variance_ratio_))
-	# print(X_new.shape)
-	# show_spectrogram(X_new)
-	# plt.imshow(X_new)
-	# plt.show()
+# f = pca_whiten(msg)
+# pca_prewhite = PCA(n_components=64)
+# pca_prewhite.fit(f)
+# print(pca_prewhite.explained_variance_ratio_)
+# pca = PCA(n_components=8, whiten=False)
+# X_new = pca.fit_transform(msg)
+# print(np.sum(pca.explained_variance_ratio_))
+# print(X_new.shape)
+# show_spectrogram(X_new)
+# plt.imshow(X_new)
+# plt.show()

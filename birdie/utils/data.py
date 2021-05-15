@@ -1,19 +1,6 @@
 import os
-import csv
-
-import pathlib
-import psutil
 import random
 
-import librosa
-import numpy as np
-
-def check_data_drive(drive_name):
-    # validates that the drive is present, returns the drive name if it is.
-    if drive_name in [i.device for i in psutil.disk_partitions()]:
-        return drive_name
-    else:
-        return False
 
 def generate_subset_of_data(
     sample_dir,
@@ -21,14 +8,14 @@ def generate_subset_of_data(
     output_path="samples",
     generate_new_subset=False,
 ):
-    '''
+    """
     Generates a text file with a file path to a sample on each line.
     Expects the sample directory provided to have individual datasets
     in folders within it, with the audio clips inside one more directory
     labeled with their file type. eg: D:/Birds/ff1010/wav/*.wav.
-    
+
     The sample_dir parameter would then be D:/Birds/ for the above.
-    '''
+    """
 
     if os.path.isfile(
         os.path.join(output_path, "{}-selected-samples.txt".format(num_samples))

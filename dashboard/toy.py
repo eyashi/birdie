@@ -16,4 +16,3 @@ for _ in tqdm(range(5000)):
     time_stamp = log_time.strftime("%Y-%m-%d %H-%M-%S")
     with open("toy-data.txt", "a") as l:
         l.write("BIRD! @{}\n".format(time_stamp))
-

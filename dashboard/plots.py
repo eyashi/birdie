@@ -35,4 +35,3 @@ if __name__ == "__main__":
     date_start = datetime.datetime.now() - datetime.timedelta(days=7)
     date_end = datetime.datetime.now() - datetime.timedelta(days=4)
     plot_freq_by_hour(date_start, date_end, d)
-

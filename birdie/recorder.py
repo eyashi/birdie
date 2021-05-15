@@ -15,6 +15,7 @@ audio device of your computer. Set some constants in constants.py and
 run to start collecting audio data. Yay.
 """
 
+
 class Recorder:
     def __init__(self, sr=constants.REC_SAMPLE_RATE):
         self.sr = sr
@@ -28,9 +29,9 @@ class Recorder:
         output_dir=constants.DEFAULT_RECORDING_DIR,
     ):
         """
-		Makes a single recording.
-		Returns the size of the recorded file.
-		"""
+        Makes a single recording.
+        Returns the size of the recorded file.
+        """
 
         clip_time_stamp = datetime.now().strftime("%Y-%m-%d %H-%M-%S")
         raw_rec = sd.rec(int(clip_duration * self.sr), samplerate=self.sr, channels=1)
@@ -61,10 +62,10 @@ class Recorder:
         data_limit=None,
     ):
         """
-		Start a recording loop.
-		Specify the end time to stop at a particular date and time. (Datetime type)
-		Specify a data limit to stop when the exported data exceeds a limit. (Megabytes)
-		"""
+        Start a recording loop.
+        Specify the end time to stop at a particular date and time. (Datetime type)
+        Specify a data limit to stop when the exported data exceeds a limit. (Megabytes)
+        """
         # validate end time
         if end_time:
             if end_time < datetime.now():
