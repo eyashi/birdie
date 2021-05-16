@@ -25,7 +25,7 @@ app = Flask(__name__)
 @app.route("/")
 def report_status():
     birds, no_birds = db.return_counts()
-    return "Clips with birds present: {0}\nClips with no birds present: {1}".format(
+    return "Clips with birds present: {0}\n Clips with no birds present: {1}".format(
         birds, no_birds
     )
 
